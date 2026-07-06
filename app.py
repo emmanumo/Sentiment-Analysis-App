@@ -22,16 +22,11 @@ label_map = {0: "negative", 1: "neutral", 2: "positive"}
 # =========================
 # TITLE
 # =========================
-st.title("ShopEase Europe — Real-Time Sentiment Analyser")
+st.title("ShopEase Europe — Real-Time CustomerSentiment Analyser")
 st.write(
-    "Classify customer reviews instantly using the trained ML pipeline. "
-    "Use Single Review or Batch Upload."
+    "Analyze customer reviews instantly using the trained ML pipeline. "
+    "Enter a Single Review or Batch Upload."
 )
-
-# =========================
-# SUCCESS BANNER
-# =========================
-st.success("Model loaded successfully.")
 
 # =========================
 # TABS
