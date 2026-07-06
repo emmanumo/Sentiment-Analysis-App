@@ -6,51 +6,10 @@ import pandas as pd
 # PAGE CONFIG
 # =========================
 st.set_page_config(
-    page_title="Sentiment Analyzer",
+    page_title="ShopEase Sentiment Analyzer",
     page_icon="📊",
     layout="wide"
 )
-
-# =========================
-# CUSTOM UI STYLING
-# =========================
-st.markdown("""
-<style>
-.main {
-    background-color: #0e1117;
-}
-
-.block-container {
-    padding-top: 2rem;
-}
-
-.title {
-    font-size: 38px;
-    font-weight: bold;
-    text-align: center;
-    color: #ffffff;
-}
-
-.subtitle {
-    text-align: center;
-    color: #a0a0a0;
-    margin-bottom: 25px;
-}
-
-.card {
-    background-color: #1c1f26;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# =========================
-# HEADER
-# =========================
-st.markdown("<div class='title'>📊 Sentiment Analysis Dashboard</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>Analyze single reviews or upload CSV for batch predictions</div>", unsafe_allow_html=True)
 
 # =========================
 # LOAD MODEL
@@ -61,92 +20,110 @@ model = joblib.load("models/logistic_regression_model.pkl")
 label_map = {0: "negative", 1: "neutral", 2: "positive"}
 
 # =========================
-# LAYOUT
+# TITLE
 # =========================
-col1, col2 = st.columns(2)
+st.title("ShopEase Europe — Real-Time Sentiment Analyser")
+st.write(
+    "Classify customer reviews instantly using the trained ML pipeline. "
+    "Use Single Review or Batch Upload."
+)
 
 # =========================
-# SINGLE PREDICTION
+# SUCCESS BANNER
 # =========================
-with col1:
-    st.subheader("✍️ Single Review Analysis")
+st.success("Model loaded successfully.")
 
-    user_input = st.text_area("Enter a review:")
+# =========================
+# TABS
+# =========================
+tab1, tab2, tab3 = st.tabs(["Single Review", "Batch Upload", "About"])
 
-    if st.button("Predict Sentiment"):
+# =========================
+# SINGLE REVIEW
+# =========================
+with tab1:
+    st.subheader("Analyse a Single Review")
+
+    user_input = st.text_area(
+        "Paste a customer review below",
+        placeholder="e.g. The item arrived broken and customer service refused to help."
+    )
+
+    if st.button("Analyse Sentiment"):
         if user_input.strip() == "":
             st.warning("Please enter a review.")
         else:
-            transformed_text = vectorizer.transform([user_input])
-            prediction = model.predict(transformed_text)[0]
-            prediction_label = label_map[prediction]
+            X = vectorizer.transform([user_input])
+            pred = model.predict(X)[0]
+            label = label_map[pred]
 
-            st.markdown("### Result")
-
-            if prediction_label == "positive":
+            if label == "positive":
                 st.success(f"😊 Positive Sentiment")
-            elif prediction_label == "negative":
+            elif label == "negative":
                 st.error(f"😡 Negative Sentiment")
             else:
                 st.info(f"😐 Neutral Sentiment")
 
 # =========================
-# BATCH PREDICTION
+# BATCH UPLOAD
 # =========================
-with col2:
-    st.subheader("📁 Batch Prediction (CSV Upload)")
+with tab2:
+    st.subheader("Batch Prediction")
 
-    uploaded_file = st.file_uploader("Upload CSV file with 'review' column", type=["csv"])
+    file = st.file_uploader("Upload CSV with 'review' column", type=["csv"])
 
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
+    if file:
+        df = pd.read_csv(file)
 
         if "review" in df.columns:
             df["prediction"] = df["review"].apply(
                 lambda x: label_map[model.predict(vectorizer.transform([x]))[0]]
             )
 
-            st.markdown("### Preview")
             st.dataframe(df.head())
 
-            # Download button
             st.download_button(
-                "📥 Download Predictions",
+                "Download Results",
                 df.to_csv(index=False),
-                "sentiment_predictions.csv",
+                "predictions.csv",
                 "text/csv"
             )
 
-            # =========================
-            # SUMMARY CHART
-            # =========================
-            st.markdown("### 📊 Sentiment Distribution")
-
-            counts = df["prediction"].value_counts()
-            st.bar_chart(counts)
+            st.bar_chart(df["prediction"].value_counts())
 
         else:
-            st.error("CSV must contain a column named 'review'")
+            st.error("CSV must contain 'review' column")
 
 # =========================
-# FOOTER BRANDING PLACEHOLDER
+# ABOUT TAB
 # =========================
-st.markdown("---")
+with tab3:
+    st.subheader("About this App")
 
-col1, col2, col3 = st.columns([1, 6, 2])
+    st.write("""
+    This sentiment analysis tool is built using:
+    - TF-IDF Vectorizer
+    - Logistic Regression Model
+    - Streamlit for deployment
 
-with col1:
+    It classifies customer reviews into Positive, Negative, or Neutral.
+    """)
+
+# =========================
+# FLOATING PROFILE (BOTTOM RIGHT)
+# =========================
+st.markdown("""
+<style>
+#profile {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50%;
+}
+</style>
+""", unsafe_allow_html=True)
+
+try:
     st.image("assets/profile.png", width=60)
-
-with col2:
-    st.markdown(
-        """
-        ### Emmanuel Effiong  
-        Data Science & NLP Enthusiast  
-
-        🔗 [View Profile](https://github.com/emmanumo/Sentiment-Analysis-App)
-        """
-    )
-
-with col3:
-    st.image("assets/app_preview.png", width=100)
+except:
+    st.write("")
