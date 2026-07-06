@@ -22,7 +22,7 @@ label_map = {0: "negative", 1: "neutral", 2: "positive"}
 # =========================
 # TITLE
 # =========================
-st.title("ShopEase Europe — Real-Time CustomerSentiment Analyser")
+st.title("ShopEase Europe — Real-Time Customer Sentiment Analyser")
 st.write(
     "Analyze customer reviews instantly using the trained ML pipeline. "
     "Enter a Single Review or Batch Upload."
@@ -41,7 +41,7 @@ with tab1:
 
     user_input = st.text_area(
         "Paste a customer review below",
-        placeholder="e.g. The item arrived broken and customer service refused to help."
+        placeholder="e.g. Item has not arrived after expected day. I have applied for refund but no response."
     )
 
     if st.button("Analyse Sentiment"):
