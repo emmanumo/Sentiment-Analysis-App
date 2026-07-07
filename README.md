@@ -165,7 +165,9 @@ Data Science & Machine Learning Enthusiast
 
 GitHub:
 https://github.com/emmanumo
+
 https://sentiment-analysis-app-965pwtzcejbpq6m5sa22gr.streamlit.app/
+
 ---
 
 ## Future Improvements
